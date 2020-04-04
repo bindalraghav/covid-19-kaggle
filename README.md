@@ -10,12 +10,18 @@ I did my best to follow a comprehensive, but not exhaustive, analysis of the dat
 
 ## The main purpose of creating this notebook is to visualize the pandemic covid-19 and it's effects. It can be used by resource persons to get valuables insights and to build upon it.
 
+`.
+├── README.md
+├── covid_trend_analysis.py
+├── install.sh
+└── kaggle.json`
+
 ## First time, please run: 
-    "bash install.sh" 
-  to install requisite python3 packages.
+    bash install.sh
+ to install requisite python3 packages.
 
 ## To visualize Covid-19 following trends please run 
-    .covid_trend_analysis.py
+    ./covid_trend_analysis.py
 1. Active corona cases across the world
 2. Reoprted deaths caused due to corona across the world
 3. Reoprted recovered corona cases across the world
