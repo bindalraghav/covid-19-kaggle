@@ -5,10 +5,10 @@ Disclaimer: The sole pupose of this work is only educational. These scripts does
 # Coronavirus disease (COVID-19) Pandemic Trend Anaylsis 
 
 ## Coronavirus disease (COVID-19) is an infectious disease caused by a newly discovered coronavirus. 
+### The main purpose of creating this notebook is to visualize the pandemic covid-19 and it's effects. It can be used by resource persons to get valuables insights and to build upon it.
 
 I did my best to follow a comprehensive, but not exhaustive, analysis of the data. I'm far from reporting a rigorous study in this kernel, but I hope that it can be useful for the community, so I'm sharing how I applied some of those data analysis principles to this problem. I will also be doing visualisations using  plotly, matplotlib from which we are gonna get valuable insights. 
 
-## The main purpose of creating this notebook is to visualize the pandemic covid-19 and it's effects. It can be used by resource persons to get valuables insights and to build upon it.
 
 ```.
 ├── README.md
