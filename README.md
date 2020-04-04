@@ -2,6 +2,10 @@
 
     Disclaimer: The sole pupose of this work is only educational. 
     These scripts doesn't provide any authentic data and must not to be used for any medical diagnosis purpose.
+    
+    Authors:
+        Manoj Goyal - (manojgoyal04@gmail.com)
+        Raghav Bindlish - (bindalraghav10@gmail.com)
 
 # Coronavirus disease (COVID-19) Pandemic Trend Anaylsis 
 
