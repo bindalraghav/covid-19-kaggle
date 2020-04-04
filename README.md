@@ -1,4 +1,4 @@
-# covid-19-kaggle
+# Coronavirus disease (COVID-19) Pandemic Trend Anaylsis 
 
     Disclaimer: The sole pupose of this work is only educational. 
     These scripts doesn't provide any authentic data and must not to be used for any medical diagnosis purpose.
@@ -6,8 +6,6 @@
     Authors:
         Manoj Goyal - (manojgoyal04@gmail.com)
         Raghav Bindlish - (bindalraghav10@gmail.com)
-
-# Coronavirus disease (COVID-19) Pandemic Trend Anaylsis 
 
     The main purpose of creating this script is to visualize the pandemic covid-19 and it's effects. 
     It can be used by resource persons to get valuables insights and to build upon it.
