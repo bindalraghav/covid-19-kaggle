@@ -10,11 +10,12 @@ I did my best to follow a comprehensive, but not exhaustive, analysis of the dat
 
 ## The main purpose of creating this notebook is to visualize the pandemic covid-19 and it's effects. It can be used by resource persons to get valuables insights and to build upon it.
 
-`.
+```.
 ├── README.md
 ├── covid_trend_analysis.py
 ├── install.sh
-└── kaggle.json`
+└── kaggle.json
+```
 
 ## First time, please run: 
     bash install.sh
