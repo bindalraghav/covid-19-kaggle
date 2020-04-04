@@ -1,5 +1,6 @@
 # covid-19-kaggle
 
+Disclaimer: These scripts doesn't provide any authentic data and must not to be used for any medical diagnosis purpose.
 
 # Coronavirus disease (COVID-19) Pandemic 
 
@@ -18,3 +19,5 @@ I did my best to follow a comprehensive, but not exhaustive, analysis of the dat
 3. Reoprted recovered corona cases across the world
 
 ## How it works:
+1. This script pulls ## COVID-19 Complete Dataset (Updated every 24hrs) from https://www.kaggle.com/imdevskp/corona-virus-report
+2. Analyse and visaulize trends
