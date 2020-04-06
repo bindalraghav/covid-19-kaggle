@@ -34,7 +34,7 @@ class Covid19(object):
                 if data:
                     username = data["username"]
                     key = data["key"]
-                    db_downlaod_cmd = f"export KAGGLE_USERNAME={username}; export KAGGLE_KEY={key}; kaggle datasets download -d imdevskp/corona-virus-report"
+                    db_downlaod_cmd = f"export KAGGLE_USERNAME={username}; export KAGGLE_KEY={key}; kaggle datasets download -d imdevskp/corona-virus-report --force"
                     os.system(db_downlaod_cmd)
                     os.system("rm -fr *.csv")
                     os.system("unzip corona-virus-report.zip")
