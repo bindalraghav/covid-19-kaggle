@@ -15,10 +15,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import plotly.offline as plo
+from plotly.subplots import make_subplots
 
 KAGGLE_CRED_FILE = "kaggle.json"
+COVID_19_INDIA_DB_FILE="covid_19_india.csv"
 COVID_19_DB_FILE = "covid_19_clean_complete.csv"
+INDIA_DETAILS="IndividualDetails.csv"
+AGE_GROUP_DETAILS="AgeGroupDetails.csv"
 DELAY = 5
 
 
@@ -34,7 +38,7 @@ class Covid19(object):
                 if data:
                     username = data["username"]
                     key = data["key"]
-                    db_downlaod_cmd = f"export KAGGLE_USERNAME={username}; export KAGGLE_KEY={key}; kaggle datasets download -d imdevskp/corona-virus-report"
+                    db_downlaod_cmd = f"kaggle datasets download -d imdevskp/corona-virus-report"
                     os.system(db_downlaod_cmd)
                     os.system("rm -fr *.csv")
                     os.system("unzip corona-virus-report.zip")
@@ -53,7 +57,7 @@ class Covid19(object):
         return self.df.Date.value_counts().sort_index().index[0]
 
     def data_last_date(self):
-        return self.df.Date.value_counts().sort_index().index[-1]
+        print(self.df.Date.value_counts().sort_index().index[-1])
 
     def rename_coloumns(self):
         # Renaming the coulmns
@@ -79,7 +83,7 @@ class Covid19(object):
         self.world = self.top.groupby('country')[
             'confirmed', 'recovered', 'deaths', 'active'].sum().reset_index()
         #print(self.world.head(50))
-
+        
     def get_data_india(self):
         self.india =  self.df[self.df.country == 'India']
         self.india = self.india.groupby(by = 'date')['recovered', 'deaths', 'confirmed', 'active'].sum().reset_index()
@@ -107,7 +111,10 @@ class Covid19(object):
       fig.update_layout(title='Recovered Cases In India Over Time',
                    xaxis_title='No. Of Days',
                    yaxis_title='No. Of Cases')
-      fig.show()    
+      fig.show()
+        
+
+        
 
     def plot_active_cases_across_world(self):
         fig = px.choropleth(self.world, locations="country",
@@ -244,7 +251,214 @@ class Covid19(object):
         plt.show()
 
 
+class Covid19_india(object):
+    def __init__(self, db_india_file):
+        self.covid_19_india_db_file = db_india_file
+        simplefilter(action='ignore', category=FutureWarning)
+        
+
+    def update_db_file(self):
+        try:
+            with open(KAGGLE_CRED_FILE, "r") as fout:
+                data = json.load(fout)
+                if data:
+                    username = data["username"]
+                    key = data["key"]
+                    db_downlaod_cmd = f"kaggle datasets download -d sudalairajkumar/covid19-in-india"
+                    os.system(db_downlaod_cmd)
+                    os.system("rm -fr *.csv")
+                    os.system("unzip covid19-in-india.zip")
+        except ValueError:
+            print("Files not found")
+
+    def read_db_file(self):
+        self.df = pd.read_csv(self.covid_19_india_db_file, index_col = 'Date')
+        self.df.index = pd.to_datetime(self.df.index, format="%d/%m/%y")
+        self.df = self.df.drop(['Sno'], axis = 1)
+        self.df.head()
+
+    def describe_db(self):
+        self.df.describe(include='object')
+        self.df.head()
+    
+    def rename_columns(self):
+        self.df.rename(columns={'Date': 'date',
+                                'State/UnionTerritory': 'state',
+                                'ConfirmedIndianNational': 'confirmed_indian',
+                                'ConfirmedForeignNational': 'confirmed_forigner', 'Cured': 'recovered',
+                                'Confirmed': 'confirmed',
+                                'Deaths': 'deaths',
+                            
+                                }, inplace=True)
+
+
+        self.df.head()
+    
+    def get_active_cases(self):
+        
+        self.df['active'] = self.df['confirmed'] - \
+            self.df['deaths'] - self.df['recovered']
+        self.df.head()
+        
+        
+    def plot_statewise_cases(self):
+        self.pivot = pd.pivot_table(self.df, values=['confirmed','deaths','recovered','active'], index='state', aggfunc='max')
+        self.pivot = self.pivot.sort_values(by='confirmed', ascending= False)
+
+        self.pivot.style.background_gradient(cmap='Wistia')
+        
+        
+        data = [go.Bar(
+            x = self.pivot.index,
+            y = self.pivot[colname],
+            name = colname
+        )for colname in self.pivot.columns]
+        
+        layout = go.Layout(
+        title = "State wise plot of cases in India",
+        template = 'plotly_dark'
+        )
+        fig = go.Figure(data=data,layout=layout)
+
+        plo.iplot(fig)
+        
+    def get_Date(self):
+        self.df['date']=self.df.index
+        self.df.head()
+        
+    def plot_daily_new_cases(self):
+        self.df_temp= self.df.groupby('date')['confirmed'].sum().reset_index().sort_values('date')
+        self.df_temp['new_cases']=self.df_temp['confirmed'].diff().fillna(method='bfill')
+        self.df_temp['new_cases']=self.df_temp['new_cases'].astype(int)
+
+        fig = px.line(self.df_temp,x='date',y='new_cases')
+        fig.update_layout(title_text="Daily new cases in India")
+        fig.show()
+        
+        
+        
+    def plot_daily_recovered_cases(self):  
+        self.df_temp1= self.df.groupby('date')['recovered'].sum().reset_index().sort_values('date')
+        self.df_temp1['daily_recovered']=self.df_temp1['recovered'].diff().fillna(method='bfill')
+        self.df_temp1['daily_recovered']=self.df_temp1['daily_recovered'].astype(int)
+
+        fig = px.line(self.df_temp1,x='date',y='daily_recovered')
+        fig.update_layout(title_text="Daily recovered cases in India")
+        fig.show()
+        
+    def plot_daily_death_cases(self):
+        self.df_temp2= self.df.groupby('date')['deaths','state'].sum().reset_index().sort_values('date')
+        self.df_temp2['daily_deaths']=self.df_temp2['deaths'].diff().fillna(method='bfill')
+        self.df_temp2['daily_deaths']=self.df_temp2['daily_deaths'].astype(int)
+
+        fig = px.line(self.df_temp2,x='date',y='daily_deaths')
+        fig.update_layout(title_text="Daily deaths cases in India")
+        fig.show()
+        
+        
+    def read_data(self):
+        self.df_details=pd.read_csv(INDIA_DETAILS)
+        india_age(AGE_GROUP_DETAILS).read_file()
+        
+        
+    def state_analysis(self):
+        
+        def plotly_facts(state):
+            
+            fig = make_subplots(
+            rows=2, cols=2,
+            specs=[[{"type":"bar"}, {"type":"pie"}],
+                   [{"colspan": 2}, None]],
+            subplot_titles=(f"Daily cases in {state}",f"Gender ratio of Patients in {state}", f"Daily Recovered Cases in {state}"))
+            self.dt = self.df[self.df['state']==state]
+            a=self.dt['confirmed']-self.dt['confirmed'].shift(1)
+            self.dt['new']=a
+            b=self.dt['recovered']-self.dt['recovered'].shift(1)
+            self.dt['d_recovered']=b    
+    
+            self.temp = self.df_details[self.df_details['detected_state']=='Kerala']
+    
+    
+            fig.add_trace(go.Bar(x=self.dt.index, y=self.dt['new']),
+                  row=1, col=1)
+
+
+            fig.add_trace(go.Pie(labels=['Male','Female'],
+                                 values=self.temp['gender'].dropna().value_counts(),
+                                 showlegend=False),
+                                  row=1, col=2)
+
+            fig.add_trace(go.Scatter(x=self.dt.index, y=self.dt['d_recovered']),
+                 row=2, col=1)
+
+
+
+            fig.update_layout(showlegend=False, title_text=f"Covid-19 Analysis of {state}")
+            fig.show()
+    
+    
+            self.temp1=self.df[self.df['state']==state]
+            self.temp1=self.temp1.iloc[:,[4,5,8]]
+
+
+
+
+            data = [go.Scatter(
+                x = self.temp1.index,
+                y = self.temp1[colname],
+                name = colname,
+                )for colname in self.temp1.columns]
+            layout = go.Layout(
+                title = f"Active vs Recovered vs Deaths plot in {state}",
+                template = 'plotly_dark'
+                )
+
+            fig = go.Figure(data=data,layout=layout)
+
+            plo.iplot(fig)
+        select_states = list(input("\nEnter Name of State/Union Teritory: ").strip().split())[:10] 
+  
+        for state in select_states:
+             plotly_facts(state)
+
+        
+class india_details(object):
+    def __init__(self, india_file):
+        self.india_db_file = india_file
+        simplefilter(action='ignore', category=FutureWarning)
+        
+    
+    def read_file(self):
+        self.df_details = pd.read_csv(self.india_db_file)
+        self.df_details.head()
+        
+    def plot_gender_ratio(self):
+        self.df_temp3 = self.df_details.gender.dropna().value_counts().reset_index()
+        self.df_temp3.columns = ['gender','count']
+        fig = px.pie(self.df_temp3,values='count',names='gender',
+                     title='Gender Wise Confirmed Cases',
+                     color_discrete_sequence=px.colors.sequential.Hot)
+        fig.show()
+        
+        
+class india_age(object):
+    def __init__(self, india_age_file):
+        self.india_age_file = india_age_file
+        simplefilter(action='ignore', category=FutureWarning)
+        
+      
+    def read_file(self):
+        self.df_age = pd.read_csv(self.india_age_file)
+        self.df_age.head()
+        
+    def plot_agewise(self):
+        
+        fig = px.pie(self.df_age,values=self.df_age.TotalCases,names=self.df_age.AgeGroup,
+             title='Total Cases-Age wise distribution in India',
+            color_discrete_sequence=px.colors.sequential.Plasma)
+        fig.show()
 def main():
+    #main Class
     covid_data = Covid19(COVID_19_DB_FILE)
     covid_data.update_db_file()
     covid_data.read_db_file()
@@ -255,30 +469,60 @@ def main():
     covid_data.get_active_cases()
     covid_data.get_active_cases_across_world()
     covid_data.get_data_india()
+    covid_india = Covid19_india(COVID_19_INDIA_DB_FILE)
+    covid_india.__init__(COVID_19_INDIA_DB_FILE)
+    covid_india.update_db_file()
+    covid_india.read_db_file()
+    covid_india.read_data()
+    covid_india.describe_db()
+    covid_india.get_Date()
+    covid_india.rename_columns()
+    covid_india.get_active_cases()
+    covid_india_details=india_details(INDIA_DETAILS)
+    covid_india_details.__init__(INDIA_DETAILS)
+    covid_india_details.read_file()
+    covid_india_age=india_age(AGE_GROUP_DETAILS)
+    covid_india_age.__init__(AGE_GROUP_DETAILS)
+    covid_india_age.read_file()
+    covid_india.get_Date()
+    #plots
     covid_data.plot_active_cases_across_world()
     time.sleep(DELAY)
     #covid_data.plot_confirmed_cases_across_world()
-    covid_data.plot_death_cases_across_world()
-    time.sleep(DELAY)
-    covid_data.plot_recovered_cases_across_world()
-    time.sleep(DELAY)
-    covid_data.plot_active_cases_across_india()
-    time.sleep(DELAY) 
-    covid_data.plot_death_cases_across_india()
-    time.sleep(DELAY)
-    covid_data.plot_recovered_cases_across_india()
-    time.sleep(DELAY)
+    #covid_data.plot_death_cases_across_world()
+    #time.sleep(DELAY)
+    #covid_data.plot_recovered_cases_across_world()
+    #time.sleep(DELAY)
+    #covid_data.plot_active_cases_across_india()
+    #time.sleep(DELAY)
+    #covid_data.plot_death_cases_across_india()
+    #time.sleep(DELAY)
+    #covid_data.plot_recovered_cases_across_india()
+    #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_active_cases_across_world()
     #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_confirmed_cases_across_world()
-    #time.sleep(DELAY)
+    # time.sleep(DELAY)
     #covid_data.plot_top_20_countries_deaths_across_world()
-    #time.sleep(DELAY)
+    # time.sleep(DELAY)
     #covid_data.plot_top_20_countries_recovered_cases_across_world()
-    #time.sleep(DELAY)
+    # time.sleep(DELAY)
     #covid_data.plot_top_20_countries_recovery_rate_across_world()
-    #time.sleep(DELAY)
-
+    # time.sleep(DELAY)
+    covid_india.plot_statewise_cases()
+    time.sleep(DELAY)
+    covid_india.plot_daily_new_cases()
+    time.sleep(DELAY)
+    covid_india.plot_daily_recovered_cases()
+    time.sleep(DELAY)
+    covid_india.plot_daily_death_cases()
+    time.sleep(DELAY)
+    covid_india_details.plot_gender_ratio()
+    time.sleep(DELAY)
+    covid_india_age.plot_agewise()
+    time.sleep(DELAY)
+    covid_india.state_analysis()
+    time.sleep(DELAY)
 
 if __name__ == "__main__":
     main()
