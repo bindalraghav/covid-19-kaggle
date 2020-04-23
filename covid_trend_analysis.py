@@ -38,7 +38,7 @@ class Covid19(object):
                 if data:
                     username = data["username"]
                     key = data["key"]
-                    db_downlaod_cmd = f"kaggle datasets download -d imdevskp/corona-virus-report"
+                    db_downlaod_cmd = f"export KAGGLE_USERNAME={username}; export KAGGLE_KEY={key};kaggle datasets download -d imdevskp/corona-virus-report"
                     os.system(db_downlaod_cmd)
                     os.system("rm -fr *.csv")
                     os.system("unzip corona-virus-report.zip")
@@ -264,7 +264,7 @@ class Covid19_india(object):
                 if data:
                     username = data["username"]
                     key = data["key"]
-                    db_downlaod_cmd = f"kaggle datasets download -d sudalairajkumar/covid19-in-india"
+                    db_downlaod_cmd = f"export KAGGLE_USERNAME={username}; export KAGGLE_KEY={key};kaggle datasets download -d sudalairajkumar/covid19-in-india"
                     os.system(db_downlaod_cmd)
                     os.system("rm -fr *.csv")
                     os.system("unzip covid19-in-india.zip")
