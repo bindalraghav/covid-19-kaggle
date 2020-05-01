@@ -116,6 +116,35 @@ class Covid19(object):
 
         
 
+    def get_data_india(self):
+        self.india =  self.df[self.df.country == 'India']
+        self.india = self.india.groupby(by = 'date')['recovered', 'deaths', 'confirmed', 'active'].sum().reset_index()
+        self.india = self.india.iloc[8:].reset_index().drop('index', axis = 1)
+        
+    def plot_active_cases_across_india(self):
+     
+      fig = go.Figure(data=go.Scatter(x=self.india.index, y=self.india.active))
+      fig.update_layout(title='Active Cases In India Over Time',
+                   xaxis_title='No. Of Days',
+                   yaxis_title='No. Of Cases')
+      fig.show()
+        
+    def plot_death_cases_across_india(self):
+     
+      fig = go.Figure(data=go.Scatter(x=self.india.index, y=self.india.deaths,line=dict(color='orange', width=2)))
+      fig.update_layout(title='Death Cases In India Over Time',
+                   xaxis_title='No. Of Days',
+                   yaxis_title='No. Of Cases')
+      fig.show()
+        
+    def plot_recovered_cases_across_india(self):
+     
+      fig = go.Figure(data=go.Scatter(x=self.india.index, y=self.india.recovered, line=dict(color='firebrick', width=2)))
+      fig.update_layout(title='Recovered Cases In India Over Time',
+                   xaxis_title='No. Of Days',
+                   yaxis_title='No. Of Cases')
+      fig.show()    
+
     def plot_active_cases_across_world(self):
         fig = px.choropleth(self.world, locations="country",
                             locationmode='country names', color="active",
@@ -489,6 +518,10 @@ def main():
     covid_data.plot_active_cases_across_world()
     time.sleep(DELAY)
     covid_data.plot_confirmed_cases_across_world()
+    covid_data.plot_active_cases_across_world()
+    time.sleep(DELAY)
+    #covid_data.plot_confirmed_cases_across_world()
+
     covid_data.plot_death_cases_across_world()
     time.sleep(DELAY)
     covid_data.plot_recovered_cases_across_world()
@@ -499,14 +532,19 @@ def main():
     time.sleep(DELAY)
     #covid_data.plot_recovered_cases_across_india()
     #time.sleep(DELAY)
+    time.sleep(DELAY) 
+    covid_data.plot_death_cases_across_india()
+    time.sleep(DELAY)
+    covid_data.plot_recovered_cases_across_india()
+    time.sleep(DELAY)
     #covid_data.plot_top_20_countries_active_cases_across_world()
     #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_confirmed_cases_across_world()
-    # time.sleep(DELAY)
+    #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_deaths_across_world()
-    # time.sleep(DELAY)
+    #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_recovered_cases_across_world()
-    # time.sleep(DELAY)
+    #time.sleep(DELAY)
     #covid_data.plot_top_20_countries_recovery_rate_across_world()
     # time.sleep(DELAY)
     covid_india.plot_statewise_cases()
@@ -523,6 +561,5 @@ def main():
     time.sleep(DELAY)
     covid_india.state_analysis()
     time.sleep(DELAY)
-
 if __name__ == "__main__":
     main()
