@@ -9,7 +9,6 @@ import os
 import time
 import json
 from warnings import simplefilter
-
 import plotly.io as pio
 import plotly.express as px
 import plotly.graph_objects as go
@@ -521,7 +520,6 @@ def main():
     covid_data.plot_active_cases_across_world()
     time.sleep(DELAY)
     #covid_data.plot_confirmed_cases_across_world()
-
     covid_data.plot_death_cases_across_world()
     time.sleep(DELAY)
     covid_data.plot_recovered_cases_across_world()
