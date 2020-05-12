@@ -399,6 +399,7 @@ class Covid19_india(object):
                    [{"colspan": 2}, None]],
             subplot_titles=(f"Daily cases in {state}",f"Gender ratio of Patients in {state}", f"Daily Recovered Cases in {state}"))
             self.dt = self.df[self.df['state']==state]
+            self.dt=self.dt.copy()
             a=self.dt['confirmed']-self.dt['confirmed'].shift(1)
             self.dt['new']=a
             b=self.dt['recovered']-self.dt['recovered'].shift(1)
