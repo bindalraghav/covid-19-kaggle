@@ -33,9 +33,17 @@
 
 ## To visualize Covid-19 following trends please run 
     ./covid_trend_analysis.py
-    1. Active corona cases across the world
-    2. Reoprted deaths caused due to corona across the world
-    3. Reoprted recovered corona cases across the world
+    1. Active corona cases across the world.
+    2. Reoprted deaths caused due to corona across the world.
+    3. Reoprted recovered corona cases across the world.
+    4. Active corona cases across India.
+    5. Reported deaths caused due to corona across India.
+    6. Reported recovered corona cases across India.
+    7. State-wise cases acrps India.
+    8. Daily new cases across India.
+    9. Gender ration of corona patients in India.
+    10. Age ratio of patients in India.
+    11. State wise analysis of Covid-19 in India.
 
 ## How it works:
     1. This script pulls "COVID-19 Complete Dataset" from https://www.kaggle.com/imdevskp/corona-virus-report
